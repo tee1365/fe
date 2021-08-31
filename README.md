@@ -19,3 +19,13 @@
       fn: (r: Result) => string
     ) => {};
     ```
+
+2. ssr
+  
+  ```plain
+  me -> browse localhost:3000 
+  -> next.js server 
+  -> request graphql server localhost:4000
+  -> building the html
+  -> sending back to your browser
+  ```

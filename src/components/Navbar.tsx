@@ -2,9 +2,11 @@ import { Box } from '@chakra-ui/layout';
 import { Button, Flex, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
+import { isServer } from '../utils/isServer';
 
 const Navbar = (): JSX.Element => {
-  const [{ fetching, data }] = useMeQuery();
+  // cookie can only be fetched at browser
+  const [{ fetching, data }] = useMeQuery({ pause: isServer() });
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   let body = null;
 
