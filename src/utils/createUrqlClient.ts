@@ -7,6 +7,7 @@ import {
   LogoutMutation,
   MeDocument,
   MeQuery,
+  PostsDocument,
   PostsQuery,
   RegisterMutation,
 } from '../generated/graphql';
@@ -79,10 +80,11 @@ export const createUrqlClient = (ssrExchange: any) => {
               betterUpdateQuery<CreatePostMutation, PostsQuery>(
                 cache,
                 {
-                  query: MeDocument,
+                  query: PostsDocument,
                 },
                 _result,
                 (result, query) => {
+                  query.posts.push(result.createPost);
                   return {
                     posts: query.posts,
                   };

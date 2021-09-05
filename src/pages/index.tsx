@@ -1,4 +1,4 @@
-import { Box, Link } from '@chakra-ui/layout';
+import { Box, Link, VStack } from '@chakra-ui/layout';
 import { withUrqlClient } from 'next-urql';
 import React from 'react';
 import Layout from '../components/Layout';
@@ -14,13 +14,11 @@ const Index = (): JSX.Element => {
         <Link>Create Post</Link>
       </NextLink>
       <br />
-      {!data
-        ? null
-        : data.posts.map((p) => (
-            <Box mt={2} id={p.id + ''}>
-              {p.title}
-            </Box>
-          ))}
+      <VStack mt={2} spacing={3}>
+        {typeof data === 'undefined'
+          ? null
+          : data.posts.map((p) => <Box>{p.title}</Box>)}
+      </VStack>
     </Layout>
   );
 };
