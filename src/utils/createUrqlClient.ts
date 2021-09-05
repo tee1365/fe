@@ -2,10 +2,12 @@ import { QueryInput, Cache, cacheExchange } from '@urql/exchange-graphcache';
 import router from 'next/dist/client/router';
 import { dedupExchange, errorExchange, fetchExchange } from 'urql';
 import {
+  CreatePostMutation,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
+  PostsQuery,
   RegisterMutation,
 } from '../generated/graphql';
 
@@ -70,6 +72,20 @@ export const createUrqlClient = (ssrExchange: any) => {
                       me: result.register.user,
                     };
                   }
+                }
+              );
+            },
+            createPost: (_result, args, cache, info) => {
+              betterUpdateQuery<CreatePostMutation, PostsQuery>(
+                cache,
+                {
+                  query: MeDocument,
+                },
+                _result,
+                (result, query) => {
+                  return {
+                    posts: query.posts,
+                  };
                 }
               );
             },
