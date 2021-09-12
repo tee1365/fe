@@ -95,6 +95,12 @@ export type Query = {
 };
 
 
+export type QueryPostsArgs = {
+  cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Float'];
+};
+
+
 export type QueryPostArgs = {
   id: Scalars['Float'];
 };
@@ -175,7 +181,10 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, email: string }> };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  postsLimit: Scalars['Float'];
+  postsCursor?: Maybe<Scalars['String']>;
+}>;
 
 
 export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, creatorId: number, text: string, points: number }> };
@@ -287,8 +296,8 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };
 export const PostsDocument = gql`
-    query Posts {
-  posts {
+    query Posts($postsLimit: Float!, $postsCursor: String) {
+  posts(limit: $postsLimit, cursor: $postsCursor) {
     ...RegularPosts
   }
 }

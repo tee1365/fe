@@ -1,5 +1,5 @@
-query Posts {
-  posts {
+query Posts($postsLimit: Float!, $postsCursor: String) {
+  posts(limit: $postsLimit, cursor: $postsCursor) {
     ...RegularPosts
   }
 }

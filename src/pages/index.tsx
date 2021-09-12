@@ -7,7 +7,11 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 import NextLink from 'next/link';
 
 const Index = (): JSX.Element => {
-  const [{ data }] = usePostsQuery();
+  const [{ data }] = usePostsQuery({
+    variables: {
+      postsLimit: 5,
+    },
+  });
   return (
     <Layout>
       <NextLink href="/createPost">
