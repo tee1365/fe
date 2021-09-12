@@ -20,6 +20,8 @@ const createPost = (): JSX.Element => {
           const { error } = await createPost({ createPostInput: values });
           if (!error) {
             router.push('/');
+          } else {
+            console.log(error);
           }
         }}
       >

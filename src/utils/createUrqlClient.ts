@@ -76,21 +76,22 @@ export const createUrqlClient = (ssrExchange: any) => {
                 }
               );
             },
-            createPost: (_result, args, cache, info) => {
-              betterUpdateQuery<CreatePostMutation, PostsQuery>(
-                cache,
-                {
-                  query: PostsDocument,
-                },
-                _result,
-                (result, query) => {
-                  query.posts.push(result.createPost);
-                  return {
-                    posts: query.posts,
-                  };
-                }
-              );
-            },
+            // createPost: (_result, args, cache, info) => {
+            //   betterUpdateQuery<CreatePostMutation, PostsQuery>(
+            //     cache,
+            //     {
+            //       query: PostsDocument,
+            //     },
+            //     _result,
+            //     (result, query) => {
+            //       console.log(result, query);
+            //       query.posts.push(result.createPost);
+            //       return {
+            //         posts: query.posts,
+            //       };
+            //     }
+            //   );
+            // },
           },
         },
       }),
