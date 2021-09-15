@@ -1,5 +1,9 @@
 query Posts($postsLimit: Int!, $postsCursor: String) {
   posts(limit: $postsLimit, cursor: $postsCursor) {
-    ...RegularPosts
+    id
+    title
+    creatorId
+    textSnippet
+    points
   }
 }
