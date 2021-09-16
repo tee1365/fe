@@ -11,6 +11,7 @@ import {
   PostsQuery,
   RegisterMutation,
 } from '../generated/graphql';
+import { cursorPagination } from './pagination';
 
 const betterUpdateQuery = <Result, Query>(
   cache: Cache,
@@ -30,6 +31,14 @@ export const createUrqlClient = (ssrExchange: any) => {
     exchanges: [
       dedupExchange,
       cacheExchange({
+        keys: {
+          PaginatedPosts: () => null,
+        },
+        resolvers: {
+          Query: {
+            posts: cursorPagination(),
+          },
+        },
         updates: {
           Mutation: {
             logout: (_result, args, cache, info) => {

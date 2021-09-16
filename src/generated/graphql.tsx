@@ -70,6 +70,12 @@ export type MutationChangePasswordArgs = {
   token: Scalars['String'];
 };
 
+export type PaginatedPosts = {
+  __typename?: 'PaginatedPosts';
+  posts: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
 export type Post = {
   __typename?: 'Post';
   id: Scalars['Float'];
@@ -89,7 +95,7 @@ export type PostInput = {
 
 export type Query = {
   __typename?: 'Query';
-  posts: Array<Post>;
+  posts: PaginatedPosts;
   post?: Maybe<Post>;
   me?: Maybe<User>;
 };
@@ -187,7 +193,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, creatorId: number, textSnippet: string, points: number }> };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, title: string, textSnippet: string }> } };
 
 export const RegularPostsFragmentDoc = gql`
     fragment RegularPosts on Post {
@@ -298,11 +304,13 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
 export const PostsDocument = gql`
     query Posts($postsLimit: Int!, $postsCursor: String) {
   posts(limit: $postsLimit, cursor: $postsCursor) {
-    id
-    title
-    creatorId
-    textSnippet
-    points
+    posts {
+      id
+      createdAt
+      title
+      textSnippet
+    }
+    hasMore
   }
 }
     `;

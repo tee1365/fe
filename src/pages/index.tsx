@@ -1,19 +1,20 @@
 import { Box, Link, VStack, Text, Flex } from '@chakra-ui/layout';
 import { withUrqlClient } from 'next-urql';
-import React from 'react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { usePostsQuery } from '../generated/graphql';
+import { PostsQueryVariables, usePostsQuery } from '../generated/graphql';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import NextLink from 'next/link';
 import { Button, Heading } from '@chakra-ui/react';
 
 const Index = (): JSX.Element => {
-  const [{ data, fetching }] = usePostsQuery({
-    variables: {
-      postsLimit: 5,
-    },
+  const [variables, setVariables] = useState<PostsQueryVariables>({
+    postsLimit: 10,
+    postsCursor: null,
   });
-
+  const [{ data, fetching }] = usePostsQuery({
+    variables,
+  });
   if (!fetching && !data) {
     return <Text>no post to display or query failed</Text>;
   }
@@ -31,7 +32,7 @@ const Index = (): JSX.Element => {
         {typeof data === 'undefined' || fetching ? (
           <Text mt={4}>fetching...</Text>
         ) : (
-          data.posts.map((p) => (
+          data.posts.posts!.map((p) => (
             <Box key={p.id} p={5} shadow="md" borderWidth="1px" width="100%">
               <Heading fontSize="xl">{p.title}</Heading>
               <Text mt={4}>{p.textSnippet}</Text>
@@ -39,13 +40,23 @@ const Index = (): JSX.Element => {
           ))
         )}
       </VStack>
-      {data && !fetching ? null : (
+      {data && !fetching && data.posts.hasMore ? (
         <Flex>
-          <Button mx="auto" my={8}>
+          <Button
+            mx="auto"
+            my={8}
+            onClick={() => {
+              setVariables({
+                postsLimit: variables.postsLimit,
+                postsCursor:
+                  data.posts.posts[data.posts.posts.length - 1].createdAt,
+              });
+            }}
+          >
             Load More
           </Button>
         </Flex>
-      )}
+      ) : null}
     </Layout>
   );
 };

@@ -10,7 +10,7 @@ const Navbar = (): JSX.Element => {
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   let body = null;
 
-  if (fetching) {
+  if (isServer() || fetching) {
     body = <Box>fetching</Box>;
   } else if (!data?.me) {
     body = (
