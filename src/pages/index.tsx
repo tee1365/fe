@@ -1,21 +1,15 @@
 import { Box, Link, VStack, Text, Flex } from '@chakra-ui/layout';
-import { withUrqlClient } from 'next-urql';
-import { useState } from 'react';
 import Layout from '../components/Layout';
-import { PostsQueryVariables, usePostsQuery } from '../generated/graphql';
-import { createUrqlClient } from '../utils/createUrqlClient';
+import { usePostsQuery } from '../generated/graphql';
 import NextLink from 'next/link';
 import { Button, Heading } from '@chakra-ui/react';
 
 const Index = (): JSX.Element => {
-  const [variables, setVariables] = useState<PostsQueryVariables>({
-    postsLimit: 10,
-    postsCursor: null,
+  const { data, loading, fetchMore, variables } = usePostsQuery({
+    variables: { postsLimit: 15, postsCursor: null },
+    notifyOnNetworkStatusChange: true,
   });
-  const [{ data, fetching }] = usePostsQuery({
-    variables,
-  });
-  if (!fetching && !data) {
+  if (!loading && !data) {
     return <Text>no post to display or query failed</Text>;
   }
 
@@ -29,7 +23,7 @@ const Index = (): JSX.Element => {
       </Flex>
       <br />
       <VStack mt={2} spacing={8}>
-        {typeof data === 'undefined' || fetching ? (
+        {typeof data === 'undefined' || loading ? (
           <Text mt={4}>fetching...</Text>
         ) : (
           data.posts.posts!.map((p) => (
@@ -40,16 +34,34 @@ const Index = (): JSX.Element => {
           ))
         )}
       </VStack>
-      {data && !fetching && data.posts.hasMore ? (
+      {data && !loading && data.posts.hasMore ? (
         <Flex>
           <Button
             mx="auto"
             my={8}
             onClick={() => {
-              setVariables({
-                postsLimit: variables.postsLimit,
-                postsCursor:
-                  data.posts.posts[data.posts.posts.length - 1].createdAt,
+              fetchMore({
+                variables: {
+                  postsLimit: variables?.postsLimit,
+                  postsCursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                },
+                // updateQuery: (previousValue, { fetchMoreResult }) => {
+                //   if (!fetchMoreResult) {
+                //     return previousValue;
+                //   }
+                //   return {
+                //     __typename: 'Query',
+                //     posts: {
+                //       __typename: 'PaginatedPosts',
+                //       hasMore: fetchMoreResult.posts.hasMore,
+                //       posts: [
+                //         ...previousValue.posts.posts,
+                //         ...fetchMoreResult.posts.posts,
+                //       ],
+                //     },
+                //   };
+                // },
               });
             }}
           >
@@ -61,4 +73,4 @@ const Index = (): JSX.Element => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default Index;

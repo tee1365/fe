@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client';
 import { Box } from '@chakra-ui/layout';
 import { Button, Flex, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
@@ -6,11 +7,12 @@ import { isServer } from '../utils/isServer';
 
 const Navbar = (): JSX.Element => {
   // cookie can only be fetched at browser
-  const [{ fetching, data }] = useMeQuery({ pause: isServer() });
-  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
+  const { loading: loadingMe, data } = useMeQuery({ skip: isServer() });
+  const [logout, { loading: loadingLogout }] = useLogoutMutation();
+  const apolloClient = useApolloClient();
   let body = null;
 
-  if (isServer() || fetching) {
+  if (isServer() || loadingMe) {
     body = <Box>fetching</Box>;
   } else if (!data?.me) {
     body = (
@@ -29,8 +31,11 @@ const Navbar = (): JSX.Element => {
         <Box mr={4}>{data?.me?.username}</Box>
         <Button
           variant="link"
-          onClick={() => logout()}
-          isLoading={logoutFetching}
+          onClick={async () => {
+            await logout();
+            await apolloClient.resetStore();
+          }}
+          isLoading={loadingLogout}
         >
           Logout
         </Button>
