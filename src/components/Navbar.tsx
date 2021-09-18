@@ -6,7 +6,6 @@ import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 
 const Navbar = (): JSX.Element => {
-  // cookie can only be fetched at browser
   const { loading: loadingMe, data } = useMeQuery({ skip: isServer() });
   const [logout, { loading: loadingLogout }] = useLogoutMutation();
   const apolloClient = useApolloClient();
