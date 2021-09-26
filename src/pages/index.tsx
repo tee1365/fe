@@ -27,7 +27,11 @@ const Index = (): JSX.Element => {
           ? null
           : data.posts.posts.map((p) => (
               <Box key={p.id} p={5} shadow="md" borderWidth="1px" width="100%">
-                <Heading fontSize="xl">{p.title}</Heading>
+                <NextLink href="/post/[id]" as={`/post/${p.id}`}>
+                  <Link>
+                    <Heading fontSize="xl">{p.title}</Heading>
+                  </Link>
+                </NextLink>
                 <Text mt={4}>{p.textSnippet}</Text>
               </Box>
             ))}

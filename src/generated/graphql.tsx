@@ -83,6 +83,7 @@ export type Post = {
   updatedAt: Scalars['String'];
   title: Scalars['String'];
   creatorId: Scalars['Float'];
+  creator: User;
   text: Scalars['String'];
   points: Scalars['Float'];
   textSnippet: Scalars['String'];
@@ -187,13 +188,20 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, email: string }> };
 
+export type PostQueryVariables = Exact<{
+  postId: Scalars['Float'];
+}>;
+
+
+export type PostQuery = { __typename?: 'Query', post?: Maybe<{ __typename?: 'Post', id: number, creatorId: number, text: string, title: string, creator: { __typename?: 'User', id: number, username: string, email: string } }> };
+
 export type PostsQueryVariables = Exact<{
   postsLimit: Scalars['Int'];
   postsCursor?: Maybe<Scalars['String']>;
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, title: string, textSnippet: string }> } };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, title: string, textSnippet: string, creator: { __typename?: 'User', createdAt: string, email: string, id: number, username: string } }> } };
 
 export const RegularPostsFragmentDoc = gql`
     fragment RegularPosts on Post {
@@ -457,6 +465,49 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const PostDocument = gql`
+    query Post($postId: Float!) {
+  post(id: $postId) {
+    id
+    creatorId
+    creator {
+      id
+      username
+      email
+    }
+    text
+    title
+  }
+}
+    `;
+
+/**
+ * __usePostQuery__
+ *
+ * To run a query within a React component, call `usePostQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostQuery({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function usePostQuery(baseOptions: Apollo.QueryHookOptions<PostQuery, PostQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PostQuery, PostQueryVariables>(PostDocument, options);
+      }
+export function usePostLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PostQuery, PostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PostQuery, PostQueryVariables>(PostDocument, options);
+        }
+export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
+export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
+export type PostQueryResult = Apollo.QueryResult<PostQuery, PostQueryVariables>;
 export const PostsDocument = gql`
     query Posts($postsLimit: Int!, $postsCursor: String) {
   posts(limit: $postsLimit, cursor: $postsCursor) {
@@ -465,6 +516,12 @@ export const PostsDocument = gql`
       createdAt
       title
       textSnippet
+      creator {
+        createdAt
+        email
+        id
+        username
+      }
     }
     hasMore
   }

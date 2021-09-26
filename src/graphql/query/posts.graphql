@@ -5,6 +5,12 @@ query Posts($postsLimit: Int!, $postsCursor: String) {
       createdAt
       title
       textSnippet
+      creator {
+        createdAt
+        email
+        id
+        username
+      }
     }
     hasMore
   }

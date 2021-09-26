@@ -1,7 +1,8 @@
 import { useApolloClient } from '@apollo/client';
-import { Box } from '@chakra-ui/layout';
+import { Box, Heading } from '@chakra-ui/layout';
 import { Button, Flex, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { ReactNode } from 'react';
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 
@@ -9,7 +10,7 @@ const Navbar = (): JSX.Element => {
   const { loading: loadingMe, data } = useMeQuery({ skip: isServer() });
   const [logout, { loading: loadingLogout }] = useLogoutMutation();
   const apolloClient = useApolloClient();
-  let body = null;
+  let body: ReactNode = null;
 
   if (isServer() || loadingMe) {
     body = <Box>fetching</Box>;
@@ -43,7 +44,12 @@ const Navbar = (): JSX.Element => {
   }
 
   return (
-    <Flex bg="tan" p={4} position="sticky" top={0} zIndex={1}>
+    <Flex bg="tan" p={4} position="sticky" top={0} zIndex={1} align="center">
+      <NextLink href="/">
+        <Link>
+          <Heading>LiReddit</Heading>
+        </Link>
+      </NextLink>
       <Box ml={'auto'}>{body}</Box>
     </Flex>
   );
