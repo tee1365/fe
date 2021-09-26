@@ -27,7 +27,12 @@ const Navbar = (): JSX.Element => {
     );
   } else {
     body = (
-      <Flex>
+      <Flex align="center">
+        <NextLink href="/createPost">
+          <Button mr={8} as={Link}>
+            Create Post
+          </Button>
+        </NextLink>
         <Box mr={4}>{data?.me?.username}</Box>
         <Button
           variant="link"
@@ -44,13 +49,15 @@ const Navbar = (): JSX.Element => {
   }
 
   return (
-    <Flex bg="tan" p={4} position="sticky" top={0} zIndex={1} align="center">
-      <NextLink href="/">
-        <Link>
-          <Heading>LiReddit</Heading>
-        </Link>
-      </NextLink>
-      <Box ml={'auto'}>{body}</Box>
+    <Flex bg="tan" p={4} position="sticky" top={0} zIndex={1}>
+      <Flex flex={1} m="auto" align="center" maxW={800}>
+        <NextLink href="/">
+          <Link>
+            <Heading>LiReddit</Heading>
+          </Link>
+        </NextLink>
+        <Box ml={'auto'}>{body}</Box>
+      </Flex>
     </Flex>
   );
 };

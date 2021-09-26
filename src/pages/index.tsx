@@ -15,13 +15,6 @@ const Index = (): JSX.Element => {
 
   return (
     <Layout>
-      <Flex alignItems="center">
-        <Heading>LiReddit</Heading>
-        <NextLink href="/createPost">
-          <Link ml="auto">Create Post</Link>
-        </NextLink>
-      </Flex>
-      <br />
       <VStack mt={2} spacing={8}>
         {typeof data === 'undefined'
           ? null
