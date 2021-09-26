@@ -6,7 +6,7 @@ import { Button, Heading } from '@chakra-ui/react';
 
 const Index = (): JSX.Element => {
   const { data, loading, fetchMore, variables } = usePostsQuery({
-    variables: { postsLimit: 15, postsCursor: null },
+    variables: { postsLimit: 3, postsCursor: null },
     notifyOnNetworkStatusChange: true,
   });
   if (!loading && !data) {
@@ -23,16 +23,14 @@ const Index = (): JSX.Element => {
       </Flex>
       <br />
       <VStack mt={2} spacing={8}>
-        {typeof data === 'undefined' || loading ? (
-          <Text mt={4}>fetching...</Text>
-        ) : (
-          data.posts.posts!.map((p) => (
-            <Box key={p.id} p={5} shadow="md" borderWidth="1px" width="100%">
-              <Heading fontSize="xl">{p.title}</Heading>
-              <Text mt={4}>{p.textSnippet}</Text>
-            </Box>
-          ))
-        )}
+        {typeof data === 'undefined'
+          ? null
+          : data.posts.posts.map((p) => (
+              <Box key={p.id} p={5} shadow="md" borderWidth="1px" width="100%">
+                <Heading fontSize="xl">{p.title}</Heading>
+                <Text mt={4}>{p.textSnippet}</Text>
+              </Box>
+            ))}
       </VStack>
       {data && !loading && data.posts.hasMore ? (
         <Flex>
@@ -46,22 +44,6 @@ const Index = (): JSX.Element => {
                   postsCursor:
                     data.posts.posts[data.posts.posts.length - 1].createdAt,
                 },
-                // updateQuery: (previousValue, { fetchMoreResult }) => {
-                //   if (!fetchMoreResult) {
-                //     return previousValue;
-                //   }
-                //   return {
-                //     __typename: 'Query',
-                //     posts: {
-                //       __typename: 'PaginatedPosts',
-                //       hasMore: fetchMoreResult.posts.hasMore,
-                //       posts: [
-                //         ...previousValue.posts.posts,
-                //         ...fetchMoreResult.posts.posts,
-                //       ],
-                //     },
-                //   };
-                // },
               });
             }}
           >
