@@ -1,14 +1,19 @@
 import { Box, Link, VStack, Text, Flex } from '@chakra-ui/layout';
 import Layout from '../components/Layout';
-import { usePostsQuery } from '../generated/graphql';
+import { useDeletePostMutation, usePostsQuery } from '../generated/graphql';
 import NextLink from 'next/link';
-import { Button, Heading } from '@chakra-ui/react';
+import { Button, Heading, IconButton } from '@chakra-ui/react';
+import React from 'react';
+import { DeleteIcon } from '@chakra-ui/icons';
 
 const Index = (): JSX.Element => {
   const { data, loading, fetchMore, variables } = usePostsQuery({
     variables: { postsLimit: 3, postsCursor: null },
     notifyOnNetworkStatusChange: true,
   });
+
+  const [deletePost] = useDeletePostMutation();
+
   if (!loading && !data) {
     return <Text>no post to display or query failed</Text>;
   }
@@ -19,13 +24,35 @@ const Index = (): JSX.Element => {
         {typeof data === 'undefined'
           ? null
           : data.posts.posts.map((p) => (
-              <Box key={p.id} p={5} shadow="md" borderWidth="1px" width="100%">
+              <Box
+                flex={1}
+                key={p.id}
+                p={5}
+                shadow="md"
+                borderWidth="1px"
+                width="100%"
+              >
                 <NextLink href="/post/[id]" as={`/post/${p.id}`}>
                   <Link>
                     <Heading fontSize="xl">{p.title}</Heading>
                   </Link>
                 </NextLink>
-                <Text mt={4}>{p.textSnippet}</Text>
+                <Flex align="center">
+                  <Text mt={4} flex={1}>
+                    {p.textSnippet}
+                  </Text>
+                  <IconButton
+                    icon={<DeleteIcon />}
+                    aria-label="delete-post"
+                    onClick={() => {
+                      deletePost({
+                        variables: {
+                          deletePostId: p.id,
+                        },
+                      });
+                    }}
+                  ></IconButton>
+                </Flex>
               </Box>
             ))}
       </VStack>
