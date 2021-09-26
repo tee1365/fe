@@ -1,6 +1,10 @@
 import { Box, Link, VStack, Text, Flex } from '@chakra-ui/layout';
 import Layout from '../components/Layout';
-import { useDeletePostMutation, usePostsQuery } from '../generated/graphql';
+import {
+  useDeletePostMutation,
+  useMeQuery,
+  usePostsQuery,
+} from '../generated/graphql';
 import NextLink from 'next/link';
 import { Button, Heading, IconButton } from '@chakra-ui/react';
 import React from 'react';
@@ -11,6 +15,8 @@ const Index = (): JSX.Element => {
     variables: { postsLimit: 3, postsCursor: null },
     notifyOnNetworkStatusChange: true,
   });
+
+  const { data: me } = useMeQuery();
 
   const [deletePost] = useDeletePostMutation();
 
@@ -41,17 +47,22 @@ const Index = (): JSX.Element => {
                   <Text mt={4} flex={1}>
                     {p.textSnippet}
                   </Text>
-                  <IconButton
-                    icon={<DeleteIcon />}
-                    aria-label="delete-post"
-                    onClick={() => {
-                      deletePost({
-                        variables: {
-                          deletePostId: p.id,
-                        },
-                      });
-                    }}
-                  ></IconButton>
+                  {typeof me !== 'undefined' && p.creator.id === me.me?.id ? (
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      aria-label="delete-post"
+                      onClick={() => {
+                        deletePost({
+                          variables: {
+                            deletePostId: p.id,
+                          },
+                          update: (cache) => {
+                            cache.evict({ fieldName: 'posts' });
+                          },
+                        });
+                      }}
+                    ></IconButton>
+                  ) : null}
                 </Flex>
               </Box>
             ))}
