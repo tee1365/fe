@@ -8,7 +8,7 @@ import {
 import NextLink from 'next/link';
 import { Button, Heading, IconButton } from '@chakra-ui/react';
 import React from 'react';
-import { DeleteIcon } from '@chakra-ui/icons';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 
 const Index = (): JSX.Element => {
   const { data, loading, fetchMore, variables } = usePostsQuery({
@@ -47,21 +47,31 @@ const Index = (): JSX.Element => {
                   <Text mt={4} flex={1}>
                     {p.textSnippet}
                   </Text>
-                  {typeof me !== 'undefined' && p.creator.id === me.me?.id ? (
-                    <IconButton
-                      icon={<DeleteIcon />}
-                      aria-label="delete-post"
-                      onClick={() => {
-                        deletePost({
-                          variables: {
-                            deletePostId: p.id,
-                          },
-                          update: (cache) => {
-                            cache.evict({ fieldName: 'posts' });
-                          },
-                        });
-                      }}
-                    ></IconButton>
+                  {p.creator.id === me?.me?.id ? (
+                    <Box>
+                      <IconButton
+                        icon={<DeleteIcon />}
+                        aria-label="delete-post"
+                        onClick={() => {
+                          deletePost({
+                            variables: {
+                              deletePostId: p.id,
+                            },
+                            update: (cache) => {
+                              cache.evict({ fieldName: 'posts' });
+                            },
+                          });
+                        }}
+                        mr={4}
+                      ></IconButton>
+                      <NextLink href="post/edit/[id]" as={`post/edit/${p.id}`}>
+                        <IconButton
+                          icon={<EditIcon />}
+                          aria-label="edit-post"
+                          as={Link}
+                        ></IconButton>
+                      </NextLink>
+                    </Box>
                   ) : null}
                 </Flex>
               </Box>
